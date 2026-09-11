@@ -1,24 +1,14 @@
 # Lingkungan tes Platform Engineer Support — traceability
 #
-# Skenario yang direproduksi dari README:
-#   - Soal 1: 6 container "target" (campuran env staging/production) +
-#             dashboard frontend yang membaca Docker API via proxy socket.
-#   - Soal 2: 1 container sengaja rusak (restart loop, env wajib dihapus).
-#   - Soal 3: desired-state.json vs tag image yang berjalan (MISMATCH).
-#
-# Jalankan:  docker compose up -d --build
-# Dashboard: http://localhost:8080
-# Docker API (read-only): http://localhost:8080/containers/json
+# Skenario:
+#   - Soal 1: 6 container target + dashboard
+#   - Soal 2: reporting-service sengaja rusak
+#   - Soal 3: desired-state.json vs tag image
 
 name: pe-support-test
 
 services:
-  # ---------------------------------------------------------------------
-  # Container "target" (simulasi server target). Diamati via Docker API.
-  # ---------------------------------------------------------------------
 
-  # Subjek Soal 3: berjalan dengan tag v2.3.0, sedangkan desired-state.json
-  # mengharapkan v2.3.1 -> MISMATCH.
   api-gateway:
     build:
       context: ./app
@@ -30,7 +20,7 @@ services:
       com.project.env: production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -48,7 +38,7 @@ services:
       com.project.env: production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -66,7 +56,7 @@ services:
       com.project.env: staging
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -105,12 +95,6 @@ services:
       retries: 5
     mem_limit: 256m
 
-  # ---------------------------------------------------------------------
-  # Container RUSAK — Soal 2.
-  # Env var wajib (REPORTING_DB_URL) sengaja TIDAK didefinisikan di sini,
-  # sehingga proses gagal cepat (exit code 1) dan dengan restart: always
-  # akan masuk ke restart loop. Lihat logs: docker compose logs reporting-service
-  # ---------------------------------------------------------------------
   reporting-service:
     image: alpine:3.20
     command:
@@ -128,9 +112,6 @@ services:
       com.project.env: staging
     mem_limit: 64m
 
-  # ---------------------------------------------------------------------
-  # Dashboard (Soal 1) + proxy Docker API read-only via unix socket.
-  # ---------------------------------------------------------------------
   dashboard:
     build: ./dashboard
     ports:
@@ -139,7 +120,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/"]
       interval: 30s
       timeout: 3s
       retries: 3

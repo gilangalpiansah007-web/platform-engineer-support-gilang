@@ -126,7 +126,61 @@
       vertical-align: middle;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
+.version-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 28px;
+}
+
+.version-card.match {
+  border-color: var(--green);
+}
+
+.version-card.mismatch {
+  border-color: var(--red);
+}
+
+.version-title {
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.version-service {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.version-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 14px;
+}
+
+.version-row span {
+  color: var(--muted);
+}
+
+.version-status {
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.version-card.match .version-status {
+  color: var(--green);
+}
+
+.version-card.mismatch .version-status {
+  color: var(--red);
+}  
+</style>
 </head>
 <body>
   <header>
@@ -140,10 +194,13 @@
     </div>
   </header>
 
-  <main>
+ <main>
     <div id="error"></div>
+
+    <div id="version-check"></div>
+
     <div id="groups"></div>
-  </main>
+</main>
 
   <script src="app.js"></script>
 </body>
