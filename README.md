@@ -108,5 +108,14 @@ Dashboard menampilkan hasil perbandingan versi secara otomatis.
 
 Pastikan Docker Engine berjalan, kemudian jalankan:
 
+`
+tambahkan:
+
+```markdown
+Dashboard:
+`http://localhost:8080`
+
+Cek status container:
+
 ```bash
-docker compose up -d --build
+docker compose ps
